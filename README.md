@@ -1,4 +1,4 @@
-# Fashion CNN · Flask Demo
+# Fashion MNIST CNN · Flask Demo
 
 A presentation-ready Flask app that runs a TinyVGG-style CNN on **FashionMNIST** and displays live metrics (train/test size, #classes, params, weights size, device, test accuracy/loss) with a one-click **Random Test Image** prediction.
 
