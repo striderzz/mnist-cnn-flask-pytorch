@@ -1,15 +1,11 @@
-You’re seeing that “cut” because I wrapped the **entire README inside one big code fence** (`markdown … `). Inside that, the README itself also contains code fences (`…`). When you paste the whole thing (including the outer fence) into GitHub, the inner fences don’t “nest” — they show up as literal backticks and the rendering looks broken right after the “Example Training Log” block.
-
-Fix: don’t wrap the whole README in a single outer fence. Paste the README **as plain Markdown** below.
-
----
 
 # FashionMNIST CNN · Flask Demo
 
 A single-page Flask web app that serves a TinyVGG-style CNN trained on the [FashionMNIST dataset](https://github.com/zalandoresearch/fashion-mnist).
 The UI shows model metrics (train/test size, params, weights, optimizer, loss, epochs, accuracy, precision/recall/F1) and lets you test the model on random samples with top-3 probabilities.
 
-![Demo Screenshot](docs/screenshot.png)
+
+![Demo Screenshot](<img width="2295" height="1291" alt="Screenshot (62)" src="https://github.com/user-attachments/assets/f77c3555-8a76-4983-b1ca-34399df6cc95" />)
 
 ---
 
