@@ -5,7 +5,7 @@ A single-page Flask web app that serves a TinyVGG-style CNN trained on the [Fash
 The UI shows model metrics (train/test size, params, weights, optimizer, loss, epochs, accuracy, precision/recall/F1) and lets you test the model on random samples with top-3 probabilities.
 
 
-![Demo Screenshot](<img width="2295" height="1291" alt="Screenshot (62)" src="https://github.com/user-attachments/assets/f77c3555-8a76-4983-b1ca-34399df6cc95" />)
+<img width="2295" height="1291" alt="Screenshot (62)" src="https://github.com/user-attachments/assets/f77c3555-8a76-4983-b1ca-34399df6cc95" />
 
 ---
 
