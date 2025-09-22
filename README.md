@@ -40,3 +40,59 @@ The UI shows **model metrics** (train/test size, params, weights, optimizer, los
 - **Eval metrics**: CE loss, accuracy, precision, recall, F1 (macro average)  
 
 Example training log:
+Epoch 01/10 | train_loss=0.6810 | test_loss=0.4474 | test_acc=83.87%
+✅ Saved better weights (acc=83.87%)
+...
+Epoch 10/10 | train_loss=0.3988 | test_loss=0.3662 | test_acc=87.01%
+
+
+Final metrics (sample run):
+- Test CE loss: **0.3096**
+- Accuracy: **88.90%**
+- Precision / Recall / F1: ~88–89%
+
+### 3. Flask Web App
+- **Startup**: Loads trained weights (`.pth`) and optional `.meta.json` with training metadata.
+- **Route `/`**: Picks a random test sample, runs inference, and renders predictions.
+- **UI**: 
+  - Header strip: dataset/model/training metrics
+  - Main panel: random image preview, predicted label, confidence, ground truth, top-3 classes
+- **Rendering**: Image is upscaled server-side (28→320 px) with nearest neighbor for sharp pixels.
+
+---
+
+## 🧰 Tech Stack
+- **PyTorch** for model + training
+- **TorchVision** for datasets + transforms
+- **Flask** for web UI
+- **scikit-learn** for precision/recall/F1
+- **Pillow** for image processing
+
+---
+
+## 📦 Installation
+
+```bash
+# 1) Clone repo
+git clone https://github.com/yourusername/fashion-cnn-flask-demo.git
+cd fashion-cnn-flask-demo
+
+# 2) Create venv (optional)
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+
+# 3) Install dependencies
+pip install flask torch torchvision pillow scikit-learn
+```
+
+## Training
+
+# Train model and save weights
+python cnn_model.py
+
+# Optional overrides
+EPOCHS=10 LR=0.01 BATCH_SIZE=128 HIDDEN_UNITS=32 python cnn_model.py
+
