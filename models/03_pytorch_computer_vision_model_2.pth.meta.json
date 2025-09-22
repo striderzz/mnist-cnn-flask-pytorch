@@ -1,0 +1,10 @@
+{
+  "epochs": 50,
+  "final_train_loss": 0.3286,
+  "final_val_loss": 0.3364,
+  "optimizer": "Adam",
+  "loss_fn": "CrossEntropyLoss",
+  "lr": 0.01,
+  "best_test_acc": 89.76,
+  "trained_at": "2025-09-22T00:09:43"
+}

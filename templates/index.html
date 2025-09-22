@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>FashionMNIST · CNN Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0b1020; --panel:#11162a; --muted:#9aa4b2; --text:#e9edf3;
+      --brand:#4f9cf9; --brand-2:#7c4dff; --ok:#22c55e; --warn:#f59e0b;
+      --card:#0f1426; --ring:rgba(79,156,249,.35); --border:rgba(255,255,255,.10);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; padding:12px;
+      background:radial-gradient(900px 420px at 12% -10%,#1e2745 0%,transparent 60%), var(--bg);
+      color:var(--text); font:14px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
+    .container{
+      max-width:1000px; margin:0 auto;
+      min-height:calc(100vh - 24px);
+      display:grid; grid-template-rows:auto 1fr; gap:10px;
+    }
+    header{margin:0}
+    h1{font-weight:800; margin:0; font-size:clamp(20px,2.6vw,28px); line-height:1.15}
+    .subtitle{color:var(--muted); margin:4px 0 8px}
+
+    /* compact metrics: two dense rows */
+    .metrics{
+      display:grid; grid-template-columns:repeat(7, minmax(0,1fr));
+      gap:6px; margin:8px 0 0;
+    }
+    .metric{
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid var(--border); border-radius:10px; padding:6px 8px;
+      display:grid; gap:2px; min-width:0;
+    }
+    .metric .k{font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .metric .v{font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .metric.good .v{color:var(--ok)}
+    .metric.warn .v{color:var(--warn)}
+
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01));
+      border:1px solid var(--border); border-radius:14px; padding:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      display:grid; grid-template-rows:auto 1fr;
+    }
+    .actions{
+      display:flex; justify-content:flex-start; align-items:center; gap:8px; margin-bottom:8px;
+    }
+    .btn{
+      appearance:none; border:1px solid transparent;
+      background:linear-gradient(135deg,var(--brand),var(--brand-2));
+      color:white; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer;
+      text-decoration:none; display:inline-flex; align-items:center; gap:.5rem;
+    }
+    .btn:focus-visible{outline:0; box-shadow:0 0 0 4px var(--ring)}
+
+    /* main grid: image | details; height-balanced to avoid scrolling */
+    .grid{
+      display:grid; gap:12px; align-items:center;
+      grid-template-columns: 320px 1fr;   /* fixed image column, flexible right column */
+      height:100%;
+    }
+    @media (max-width:900px){
+      .grid{grid-template-columns: 1fr; grid-auto-rows:min-content}
+    }
+
+    .imgWrap{
+      width:70%; aspect-ratio:1/1; max-width:320px; margin:auto;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; padding:8px; display:grid; place-items:center;
+    }
+    img.preview{
+      width:100%; height:100%; object-fit:contain; image-rendering:pixelated; filter:contrast(1.05)
+    }
+    h3{margin:0 0 6px; font-size:18px}
+    .muted{color:var(--muted)}
+
+    .kvs{display:grid; gap:3px; margin:4px 0 8px}
+    .top3{display:grid; gap:6px}
+    .row3{
+      display:flex; justify-content:space-between; gap:8px;
+      padding:6px 8px; border:1px solid var(--border);
+      border-radius:9px; background:rgba(255,255,255,.02)
+    }
+    .label{font-weight:600; overflow:hidden; text-overflow:ellipsis}
+    .bar{height:6px; border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden}
+    .bar > i{display:block; height:100%; background:linear-gradient(90deg,var(--brand),var(--brand-2)); width:0}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>FashionMNIST Image Classification (CNN)</h1>
+      <p class="subtitle">One-click random test image with prediction and top-3 probabilities.</p>
+
+      <!-- metrics (14 cards: 2 rows × 7 cols) -->
+      <div class="metrics">
+        <div class="metric"><div class="k">Train size</div><div class="v">{{ metrics.train_size }}</div></div>
+        <div class="metric"><div class="k">Test size</div><div class="v">{{ metrics.test_size }}</div></div>
+        <div class="metric"><div class="k">Classes</div><div class="v">{{ metrics.num_classes }}</div></div>
+        <div class="metric"><div class="k">Params</div><div class="v">{{ metrics.num_params }}</div></div>
+        <div class="metric"><div class="k">Weights</div><div class="v">{{ metrics.weights_mb }} MB</div></div>
+        <div class="metric"><div class="k">Device</div><div class="v">{{ metrics.device }}</div></div>
+        <div class="metric"><div class="k">LR</div><div class="v">{{ metrics.lr }}</div></div>
+
+        <div class="metric"><div class="k">Optimizer</div><div class="v">{{ metrics.optimizer }}</div></div>
+        <div class="metric"><div class="k">Loss fn</div><div class="v">{{ metrics.loss_fn }}</div></div>
+        <div class="metric"><div class="k">Epochs</div><div class="v">{{ metrics.epochs }}</div></div>
+        <div class="metric"><div class="k">Final train loss</div><div class="v">{{ metrics.final_train_loss }}</div></div>
+        <div class="metric"><div class="k">Final val loss</div><div class="v">{{ metrics.final_val_loss }}</div></div>
+        <div class="metric"><div class="k">Test CE loss</div><div class="v">{{ metrics.test_loss }}</div></div>
+        <div class="metric good"><div class="k">Accuracy</div><div class="v">{{ metrics.test_acc }}%</div></div>
+      </div>
+
+      {% if metrics.trained_at and metrics.trained_at != '—' %}
+        <p class="subtitle" style="margin-top:6px">Trained at: {{ metrics.trained_at }}</p>
+      {% endif %}
+    </header>
+
+    <div class="panel">
+      <div class="actions">
+        <!-- simple reload to get a new random sample; no JS -->
+        <a class="btn" href="{{ url_for('index') }}">🎲 Random Test Image</a>
+      </div>
+
+      <div class="grid">
+        <div class="imgWrap">
+          <img class="preview" src="{{ image_data }}" alt="random test">
+        </div>
+
+        <div>
+          <h3>Prediction: {{ pred_label }}</h3>
+          <div class="kvs">
+            <span>Confidence: <strong>{{ pred_conf }}</strong></span>
+            <span class="muted">Ground truth: {{ truth_label }}</span>
+          </div>
+
+          <div class="muted">Top-3</div>
+          <div class="top3">
+            {% for label, p in top3 %}
+              <div class="row3"><span class="label">{{ label }}</span><span>{{ '%.2f'|format(p*100) }}%</span></div>
+              <div class="bar"><i style="width: {{ '%.2f'|format(p*100) }}%"></i></div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
